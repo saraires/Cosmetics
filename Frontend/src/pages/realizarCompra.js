@@ -13,22 +13,40 @@ export default function RealizarCompra() {
     const [precio, setPrecio] = useState();
     const [cantidad, setCantidad] = useState([]);
     const [nombre, setNombre] = useState();
-
     const [todosLosProductos, setTodosLosProductos] = useState([]);
 
-    let subtotal = cantidad && precio > 0 ? cantidad * precio : 0;
-
-    const inicio = 0;
-
-    let objetoProducto = {
-        "nombre": nombre,
-        "cantidad": cantidad,
-        "subtotal": subtotal
-    }
-
+    const [subtotalTodosLosProductos, setSubtotalTodosLosProductos] = useState();
+    let [IVA, setIVA] = useState();
+    let [totalCompra, setTotalCompra] = useState();
 
     const today = new Date();
     const date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
+
+    let subtotal = cantidad && precio > 0 ? cantidad * precio : 0;
+
+    // setSubtotalTodosLosProductos(0);
+
+    let numero = 0;
+
+    const suma = function () {
+        console.log("Entro a suma");
+        console.log(todosLosProductos);
+        
+        for (let i = 0; i <= todosLosProductos.length; i++) {
+            console.log("subt" + subtotalTodosLosProductos);
+            numero += todosLosProductos.subtotal
+            console.log(subtotalTodosLosProductos);
+            console.log(numero);
+        }
+        
+    }
+
+    setIVA = subtotalTodosLosProductos * 0.19;
+    setTotalCompra = subtotalTodosLosProductos + IVA;
+
+    console.log(subtotalTodosLosProductos);
+    console.log(IVA);
+    console.log(totalCompra)
 
     useEffect(() => {
         axios.get(`/productos`)
@@ -45,17 +63,28 @@ export default function RealizarCompra() {
                 subtotal: subtotal,
                 id_Producto: id_Producto
             });
-            document.getElementById("clear").reset();
             $('#clear2').val(0);
+            setId_producto(0);
+            setPrecio('');
+            setNombre('');
             console.log(todosLosProductos);
+            document.getElementById("clear").reset();
         } catch (error) {
             console.log(error)
         }
     }
 
-    const limpiarVariables = () => {
-        subtotal = 0;
-    }
+    // Boton de agregar orden
+    // const agregarOrden = () => {
+    //     try {
+    //         axios.post(`/agregarOrden`);
+    //         console.log(todosLosProductos)
+    //         setNotas(notas.filter(notas => notas._id !== id_nota));
+    //         window.location = `/inicio/${id}`
+    //     } catch (error) {
+    //         console.log(error.message)
+    //     }
+    // }
 
     return (
         <div>
@@ -105,7 +134,7 @@ export default function RealizarCompra() {
                         <label className="form-label">Subtotal</label>
                         <input type="text" disabled className="form-control" rows="3" id="clear2" value={subtotal}></input>
                     </div>
-                    <button type="button" class="btn btn-success" onClick={() => { actualizarTodosLosProductos(); limpiarVariables() }}>Agregar productos</button>
+                    <button type="button" class="btn btn-success" onClick={() => { actualizarTodosLosProductos(); suma() }}> Agregar productos</button>
                     <br />
                 </div>
             </form>
@@ -113,7 +142,7 @@ export default function RealizarCompra() {
             <h1 className="container">Detalle de la orden</h1>
             <div>
                 <Container>
-                    <Table
+                    <Table id="tabla"
                         striped
                         hover
                         className="container table-responsive"
@@ -137,9 +166,8 @@ export default function RealizarCompra() {
                                         <td width="10%">{item.subtotal}</td>
                                         <td width="10%">
                                             <button type="button" className="btn btn-danger" onClick={() => {
-                                                const isLargeNumber = (element) => element.id_Producto == item.id_Producto;
+                                                const isLargeNumber = (element) => element.id_Producto === item.id_Producto;
                                                 todosLosProductos.splice(todosLosProductos.findIndex(isLargeNumber), 1);
-                                                console.log(todosLosProductos);
                                             }}>
                                                 X
                                             </button>
@@ -147,6 +175,26 @@ export default function RealizarCompra() {
                                     </tr>
                                 )
                             })}
+
+                        </tbody>
+                    </Table>
+                    <br />
+                    <Table>
+                        <thead className="text-info text-center table-bordered">
+                            <tr className="table-info">
+                                <th scope="col">Subtotal</th>
+                                <th scope="col">IVA 19%</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody className="text-center table-bordered" >
+                            {
+                                <tr>
+                                    <td id="subtotal_producto">{subtotalTodosLosProductos}</td>
+                                    <td>{IVA}</td>
+                                    <td>{totalCompra}</td>
+                                </tr>
+                            }
                         </tbody>
                     </Table>
                 </Container>
