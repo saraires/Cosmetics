@@ -7,12 +7,22 @@ import Menu from './menu';
 
 export default function RealizarCompra() {
 
-    const [producto, setProducto] = useState([]);
+    const [productodb, setProductodb] = useState([]);
     const [id_Producto, setId_producto] = useState();
     const [precio, setPrecio] = useState();
     const [cantidad, setCantidad] = useState([]);
+    const [nombre, setNombre] = useState();
+
+    const [todosLosProductos, setTodosLosProductos] = useState([]);
 
     let subtotal = cantidad * precio;
+
+    let objetoProducto = {
+        "nombre": nombre,
+        "cantidad": cantidad,
+        "subtotal": subtotal
+    }
+
 
     const today = new Date();
     const date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
@@ -20,9 +30,21 @@ export default function RealizarCompra() {
     useEffect(() => {
         axios.get(`/productos`)
             .then((res) => {
-                setProducto(res.data);
+                setProductodb(res.data);
             });
     }, []);
+
+    const actualizarTodosLosProductos = () => {
+        try {
+            console.log(objetoProducto);
+            todosLosProductos.push({ nombre: nombre });
+            console.log(todosLosProductos);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    console.log(todosLosProductos);
 
     return (
         <div>
@@ -47,15 +69,15 @@ export default function RealizarCompra() {
                     <label className="form-label">Producto</label>
                     <select className="form-select form-control" aria-label="Default select example" onChange={(e) => {
                         const array = e.target.value.split(",");
-                        console.log((array));
                         setId_producto(array[0]);
                         setPrecio(array[1]);
+                        setNombre(array[2]);
                     }}>
                         <option value="0">Selecciona un producto</option>
                         {
-                            producto.map((producto, index) => {
+                            productodb.map((producto, index) => {
                                 return (
-                                    <option value={[producto.id_Producto, producto.precio]} className="dropdown-item" key={index}>
+                                    <option value={[producto.id_Producto, producto.precio, producto.nombre]} className="dropdown-item" key={index}>
                                         {producto.nombre}
                                     </option>
                                 )
@@ -69,9 +91,9 @@ export default function RealizarCompra() {
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Subtotal</label>
-                    <input type="text" disabled className="form-control" rows="3" defaultValue="0" placeholder={subtotal}></input>
+                    <input type="text" disabled className="form-control" rows="3" placeholder={subtotal}></input>
                 </div>
-                <button type="button" class="btn btn-success">Agregar productos</button>
+                <button type="button" class="btn btn-success" onClick={() => actualizarTodosLosProductos()}>Agregar productos</button>
                 <br />
             </div>
             <br />
@@ -85,32 +107,25 @@ export default function RealizarCompra() {
                 >
                     <thead className="text-info text-center table-bordered">
                         <tr className="table-info">
-                            <th scope="col">Codigo Grupo</th>
-                            <th scope="col">Descripción Grupo</th>
-                            <th scope="col">Jornada</th>
+                            <th scope="col">Articulo</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Subtotal</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
-                    <tbody className="text-center table-bordered">
-                        {/* {grupos.map((item, index) => {
-                            console.log(item.id_grupo)
+                    <tbody className="container text-center table-bordered" >
+                        {todosLosProductos.map((item, index) => {
+                            console.log(item.id_Producto)
                             return (
-                                <tr key={`${index - item.id}`}>
-                                    <td width="10%">{item.cod_grupo}</td>
-                                    <td width="10%">{item.descripcion}</td>
-                                    <td width="10%">{item.jornada}</td>
+                                <tr key={item.id}>
+                                    <td width="10%">{item.nombre}</td>
+                                    <td width="10%">{item.cantidad}</td>
+                                    <td width="10%">{item.precio}</td>
                                     <td width="10%">
-                                        <EditarGrupo grupo={item} />{" "}
-                                        <button
-                                            type="button"
-                                            className="btn btn-danger"
-                                            onClick={() => deleteGrupo(item.id_grupo)}
-                                        >
-                                            Eliminar
-                  </button>
                                     </td>
-                                </tr>)
-                        })} */}
+                                </tr>
+                            )
+                        })}
                     </tbody>
                 </Table>
             </div>
