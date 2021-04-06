@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from "../axios/axios";
+import { Container, Table } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { getFromLocal, saveToLocal } from '../functions/localstorage';
 import Menu from './menu';
@@ -7,7 +8,11 @@ import Menu from './menu';
 export default function RealizarCompra() {
 
     const [producto, setProducto] = useState([]);
+    const [id_Producto, setId_producto] = useState();
+    const [precio, setPrecio] = useState();
     const [cantidad, setCantidad] = useState([]);
+
+    let subtotal = cantidad * precio;
 
     const today = new Date();
     const date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
@@ -19,21 +24,11 @@ export default function RealizarCompra() {
             });
     }, []);
 
-    // const deleteNota = (id_nota) => {
-    //     try {
-    //         axios
-    //             .delete(`/eliminarNota/${id_nota}`);
-    //         console.log(id_nota)
-    //         setNotas(notas.filter(notas => notas._id !== id_nota));
-    //         window.location = `/inicio/${id}`
-    //     } catch (error) {
-    //         console.log(error.message)
-    //     }
-    // }
-
     return (
         <div>
             <Menu />
+            <br />
+            <h1 className="container">Comprar</h1>
             <div className="container card" style={{ marginTop: "15px" }}>
                 <div className="mb-3" style={{ marginTop: "15px" }}>
                     <label className="form-label">Numero de orden</label>
@@ -48,43 +43,78 @@ export default function RealizarCompra() {
                     <input type="number" className="form-control" disabled id="exampleFormControlTextarea1" placeholder={date} rows="3"></input>
                 </div>
 
-                <div class="dropdown">
-                    <button
-                        class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown button
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#">
-                            Action
-                        </a>
-                        <a class="dropdown-item" href="#">
-                            Another action
-                        </a>
-                        <a class="dropdown-item" href="#">
-                            Something else here
-                        </a>
-                    </div>
+                <div className="mb-3">
+                    <label className="form-label">Producto</label>
+                    <select className="form-select form-control" aria-label="Default select example" onChange={(e) => {
+                        const array = e.target.value.split(",");
+                        console.log((array));
+                        setId_producto(array[0]);
+                        setPrecio(array[1]);
+                    }}>
+                        <option value="0">Selecciona un producto</option>
+                        {
+                            producto.map((producto, index) => {
+                                return (
+                                    <option value={[producto.id_Producto, producto.precio]} className="dropdown-item" key={index}>
+                                        {producto.nombre}
+                                    </option>
+                                )
+                            })
+                        }
+                    </select>
                 </div>
-
-                <div>
-                    {
-                        producto.map((producto, index) => {
-                            return (
-
-                                <div className="form-check" key={index}>
-                                    <input className="form-check-input" type="radio" name="flexRadioDefault" onClick={() => saveToLocal("id_producto", producto.id_Producto)} />
-                                    <label className="form-check-label" for="flexRadioDefault1">{producto.nombre}</label>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
-                <br />
                 <div className="mb-3">
                     <label className="form-label">Cantidad del producto</label>
-                    <input type="number" className="form-control" rows="3"></input>
+                    <input type="number" className="form-control" rows="3" onChange={(e) => { setCantidad(e.target.value); console.log(e.target.value); }}></input>
                 </div>
+                <div className="mb-3">
+                    <label className="form-label">Subtotal</label>
+                    <input type="text" disabled className="form-control" rows="3" defaultValue="0" placeholder={subtotal}></input>
+                </div>
+                <button type="button" class="btn btn-success">Agregar productos</button>
+                <br />
             </div>
+            <br />
+            <h1 className="container">Detalle de la orden</h1>
+            <div>
+                <Table
+                    striped
+                    hover
+                    className="table-responsive"
+                    style={{ width: "100%", display: "block", margin: "auto" }}
+                >
+                    <thead className="text-info text-center table-bordered">
+                        <tr className="table-info">
+                            <th scope="col">Codigo Grupo</th>
+                            <th scope="col">Descripción Grupo</th>
+                            <th scope="col">Jornada</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody className="text-center table-bordered">
+                        {/* {grupos.map((item, index) => {
+                            console.log(item.id_grupo)
+                            return (
+                                <tr key={`${index - item.id}`}>
+                                    <td width="10%">{item.cod_grupo}</td>
+                                    <td width="10%">{item.descripcion}</td>
+                                    <td width="10%">{item.jornada}</td>
+                                    <td width="10%">
+                                        <EditarGrupo grupo={item} />{" "}
+                                        <button
+                                            type="button"
+                                            className="btn btn-danger"
+                                            onClick={() => deleteGrupo(item.id_grupo)}
+                                        >
+                                            Eliminar
+                  </button>
+                                    </td>
+                                </tr>)
+                        })} */}
+                    </tbody>
+                </Table>
+            </div>
+
         </div >
 
     )
