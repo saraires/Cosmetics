@@ -2,7 +2,7 @@ import React from 'react';
 import axios from "../axios/axios";
 import { Container, Table } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import $ from 'jquery';
+import * as $ from 'jquery';
 // import { getFromLocal, saveToLocal } from '../functions/localstorage';
 import Menu from './menu';
 
@@ -13,41 +13,34 @@ export default function RealizarCompra() {
     const [precio, setPrecio] = useState();
     const [cantidad, setCantidad] = useState([]);
     const [nombre, setNombre] = useState();
-    const [todosLosProductos, setTodosLosProductos] = useState([]);
-
+    const [todosLosProductos] = useState([]);
+    const [numOrden, setNumOrden] = useState([]);
     const [subtotalTodosLosProductos, setSubtotalTodosLosProductos] = useState();
-    let [IVA, setIVA] = useState();
-    let [totalCompra, setTotalCompra] = useState();
+    const [iva, setIVA] = useState();
+    const [totalCompra, setTotalCompra] = useState();
 
     const today = new Date();
-    const date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
+    const date =  `${today.getFullYear()}/${(today.getMonth() + 1)}/${today.getDate()}`;
 
     let subtotal = cantidad && precio > 0 ? cantidad * precio : 0;
-
-    // setSubtotalTodosLosProductos(0);
 
     let numero = 0;
 
     const suma = function () {
-        console.log("Entro a suma");
-        console.log(todosLosProductos);
-        
-        for (let i = 0; i <= todosLosProductos.length; i++) {
-            console.log("subt" + subtotalTodosLosProductos);
-            numero += todosLosProductos.subtotal
-            console.log(subtotalTodosLosProductos);
-            console.log(numero);
+        for (let i = 0; i < todosLosProductos.length; i++) {
+            numero += todosLosProductos[i].subtotal;
         }
-        
+        setearValores();
     }
 
-    setIVA = subtotalTodosLosProductos * 0.19;
-    setTotalCompra = subtotalTodosLosProductos + IVA;
+    function setearValores() {
+        setSubtotalTodosLosProductos(numero);
+        let calculoiva = numero * 0.19
+        setIVA(calculoiva);
+        setTotalCompra(numero + calculoiva);
+    }
 
-    console.log(subtotalTodosLosProductos);
-    console.log(IVA);
-    console.log(totalCompra)
-
+    // Peticion para traer los productos de la bd
     useEffect(() => {
         axios.get(`/productos`)
             .then((res) => {
@@ -55,10 +48,40 @@ export default function RealizarCompra() {
             });
     }, []);
 
+    // Boton de traer el numero de orden
+    useEffect(() => {
+        try {
+            axios.get(`/orden`)
+                .then((res) => {
+                    setNumOrden(res.data);
+                })
+        } catch (error) {
+            console.log(error.message)
+        }
+    }, []);
+
+    const orden = numOrden.length + 1
+
+    // Boton de agregar orden
+    const agregarOrden = () => {
+        axios.post(`/agregarOrden`, {
+            id_Orden: orden,
+            nombre: nombre,
+            subtotal: subtotalTodosLosProductos,
+            iva: iva,
+            total: totalCompra,
+            fecha: date,
+            numeroProductos: cuantosProductosHay
+        })
+        window.location = `/realizarCompra`;
+    };
+
     const actualizarTodosLosProductos = () => {
         try {
             todosLosProductos.push({
+                id_Orden: orden,
                 nombre: nombre,
+                fecha: date,
                 cantidad: cantidad,
                 subtotal: subtotal,
                 id_Producto: id_Producto
@@ -67,24 +90,20 @@ export default function RealizarCompra() {
             setId_producto(0);
             setPrecio('');
             setNombre('');
-            console.log(todosLosProductos);
             document.getElementById("clear").reset();
         } catch (error) {
             console.log(error)
         }
+
     }
 
-    // Boton de agregar orden
-    // const agregarOrden = () => {
-    //     try {
-    //         axios.post(`/agregarOrden`);
-    //         console.log(todosLosProductos)
-    //         setNotas(notas.filter(notas => notas._id !== id_nota));
-    //         window.location = `/inicio/${id}`
-    //     } catch (error) {
-    //         console.log(error.message)
-    //     }
-    // }
+    let cuantosProductosHay = 0;
+
+    const cuantosProductos = function () {
+        for (let i = 0; i < todosLosProductos.length; i++) {
+            cuantosProductosHay += 1;
+        }
+    }
 
     return (
         <div>
@@ -95,11 +114,11 @@ export default function RealizarCompra() {
                 <div className="container card" style={{ marginTop: "15px" }}>
                     <div className="mb-3" style={{ marginTop: "15px" }}>
                         <label className="form-label">Numero de orden</label>
-                        <input type="number" className="form-control" disabled id="exampleFormControlInput1" placeholder="Me traigo la info" />
+                        <input type="number" className="form-control" disabled id="exampleFormControlInput1" value={orden} />
                     </div>
                     <div className="mb-3">
                         <label className="form-label">Nombre</label>
-                        <input type="text" className="form-control" id="exampleFormControlTextarea1" rows="3"></input>
+                        <input type="text" className="form-control" id="exampleFormControlTextarea1" defaultValue="nombre" rows="3"></input>
                     </div>
                     <div className="mb-3">
                         <label className="form-label">Fecha</label>
@@ -128,21 +147,22 @@ export default function RealizarCompra() {
                     </div>
                     <div className="mb-3">
                         <label className="form-label">Cantidad del producto</label>
-                        <input type="number" className="form-control" rows="3" onChange={(e) => { setCantidad(e.target.value); }}></input>
+                        <input className="form-control" rows="3" type="number" min="0" onChange={(e) => { e.target.value = !!e.target.value && Math.abs(e.target.value) >= 0 ? Math.abs(e.target.value) : null; setCantidad(e.target.value); }}></input>
                     </div>
                     <div className="mb-3">
                         <label className="form-label">Subtotal</label>
                         <input type="text" disabled className="form-control" rows="3" id="clear2" value={subtotal}></input>
                     </div>
-                    <button type="button" class="btn btn-success" onClick={() => { actualizarTodosLosProductos(); suma() }}> Agregar productos</button>
+                    <button type="button" className="btn btn-success" onClick={() => { actualizarTodosLosProductos(); suma(); }}> Agregar productos</button>
                     <br />
                 </div>
             </form>
             <br />
             <h1 className="container">Detalle de la orden</h1>
+            <br />
             <div>
                 <Container>
-                    <Table id="tabla"
+                    <Table
                         striped
                         hover
                         className="container table-responsive"
@@ -157,10 +177,10 @@ export default function RealizarCompra() {
                             </tr>
                         </thead>
 
-                        <tbody className="text-center table-bordered" >
+                        <tbody id="tabla2" className="text-center table-bordered" >
                             {todosLosProductos.map((item, index) => {
                                 return (
-                                    <tr key={item.id}>
+                                    <tr key={index}>
                                         <td width="10%">{item.nombre}</td>
                                         <td width="10%">{item.cantidad}</td>
                                         <td width="10%">{item.subtotal}</td>
@@ -179,7 +199,12 @@ export default function RealizarCompra() {
                         </tbody>
                     </Table>
                     <br />
-                    <Table>
+                    <Table
+                        striped
+                        hover
+                        className="container table-responsive"
+                        style={{ width: "100%", display: "block", margin: "auto" }}
+                    >
                         <thead className="text-info text-center table-bordered">
                             <tr className="table-info">
                                 <th scope="col">Subtotal</th>
@@ -191,12 +216,16 @@ export default function RealizarCompra() {
                             {
                                 <tr>
                                     <td id="subtotal_producto">{subtotalTodosLosProductos}</td>
-                                    <td>{IVA}</td>
+                                    <td>{iva}</td>
                                     <td>{totalCompra}</td>
                                 </tr>
                             }
                         </tbody>
                     </Table>
+                    <br />
+                    <button type="button" className="container btn btn-success " style={{ margin: "auto" }} onClick={() => { cuantosProductos(); agregarOrden()}}> Hacer pedido </button>
+                    <br />
+                    <br />
                 </Container>
             </div>
 

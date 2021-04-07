@@ -15,7 +15,7 @@ export default function inicio() {
                                 <a className="nav-link" aria-current="page" href="/realizarCompra">Realizar Compra</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" aria-current="page" href="/#">Total Compras</a>
+                                <a className="nav-link" aria-current="page" href="/totalCompras">Total Compras</a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" aria-current="page" href="/#">Sarai Restrepo Rodríguez</a>

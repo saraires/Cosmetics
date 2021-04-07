@@ -31,9 +31,11 @@ router.post('/agregarOrden', async (req, res) => {
             nombre,
             subtotal,
             iva,
-            total
+            total,
+            fecha,
+            numeroProductos
         } = req.body
-        const [rows, fields] = await cnn_mysql.promise().execute(`INSERT INTO Orden(id_Orden, nombre, subtotal, iva, total) VALUES (?, ?, ?, ?, ?)`, [id_Orden, nombre, subtotal, iva, total]);
+        const [rows, fields] = await cnn_mysql.promise().execute(`INSERT INTO Orden(id_Orden, nombre, subtotal, iva, total, fecha, numeroProductos) VALUES (?, ?, ?, ?, ?, ?, ?)`, [id_Orden, nombre, subtotal, iva, total, fecha, numeroProductos]);
 
         if (rows.affectedRows > 0) {
             res.json({
@@ -41,13 +43,16 @@ router.post('/agregarOrden', async (req, res) => {
                 nombre: nombre,
                 subtotal: subtotal,
                 iva: iva,
-                total: total
+                total: total,
+                fecha: fecha,
+                numeroProductos: numeroProductos
             })
         } else {
             res.json({})
         }
+
     } catch (e) {
-        res.status(500).json({errorCode : e.errno, message: "Error en el servidor"});
+        res.status(500).json({e});
     }
 });
 
