@@ -3,7 +3,6 @@ import axios from "../axios/axios";
 import { Container, Table } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import * as $ from 'jquery';
-// import { getFromLocal, saveToLocal } from '../functions/localstorage';
 import Menu from './menu';
 
 export default function RealizarCompra() {
@@ -109,7 +108,7 @@ export default function RealizarCompra() {
         <div>
             <Menu />
             <br />
-            <h1 className="container">Comprar</h1>
+            <h1 className="container">Compras</h1>
             <form id="clear">
                 <div className="container card" style={{ marginTop: "15px" }}>
                     <div className="mb-3" style={{ marginTop: "15px" }}>
