@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from "../axios/axios";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Container, Table } from "react-bootstrap";
 import Menu from './menu';
 
@@ -15,6 +16,7 @@ export default function TotalCompras() {
             });
     }, []);
 
+    console.log(orden);
     const transformer = (data) => {
         const fecha = data.split("T");
         return fecha[0];
@@ -26,9 +28,12 @@ export default function TotalCompras() {
         <div>
             <Menu />
             <br />
-            <h1 className="container">Historial de compras</h1>
-            <br/>
-            <Container>
+            <Container className="card shadow-lg col-md-8 mb-4">
+                <br />
+                <h1 className="container">Historial de compras</h1>
+                <br />
+                <h3>Nombre:</h3>
+                <p>{orden.nombre}</p>
                 <Table id="tabla"
                     striped
                     hover
@@ -61,8 +66,12 @@ export default function TotalCompras() {
                         })}
                     </tbody>
                 </Table>
-                <br/>
-                <button type="button" href="/" className="container btn btn-danger"> Volver al inicio</button>
+                <br />
+                <center>
+                    <Link to={`/`} className="col-md-4 container">
+                        <button type="button" href="/" className="btn btn-danger" > Volver al inicio</button>
+                    </Link>
+                </center>
                 <br />
             </Container>
         </div>

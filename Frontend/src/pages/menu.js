@@ -1,11 +1,15 @@
 import React from 'react';
+import { Link } from "react-router-dom";
+import Logo from '../images/Logo.png'
 
 export default function inicio() {
     return (
         <div>
-            <div className="navbar navbar-expand-lg navbar-light bg-light">
+            <div className="navbar navbar-expand-lg navbar-light bg-light shadow-lg">
                 <div className="container-fluid">
-                    <a className="navbar-brand" href="/#">Cosmetics</a>
+                    <Link to={`/`}>
+                        <img alt="..." src={Logo} className="navbar-brand pb-2" href="/#" width="90px" />
+                    </Link>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
@@ -18,7 +22,7 @@ export default function inicio() {
                                 <a className="nav-link" aria-current="page" href="/totalCompras">Total Compras</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" aria-current="page" href="/#">Sarai Restrepo Rodríguez</a>
+                                <a className="nav-link" style={{ paddingLeft: "660px" }} aria-current="page" href="/#">Sarai Restrepo Rodríguez</a>
                             </li>
                         </ul>
                     </div>
