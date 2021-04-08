@@ -16,13 +16,20 @@ export default function TotalCompras() {
             });
     }, []);
 
+    const eliminar = () => {
+        try {
+            axios.delete('/eliminar-productos');
+            window.location = "/"
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     console.log(orden);
     const transformer = (data) => {
         const fecha = data.split("T");
         return fecha[0];
     }
-
-    console.log(orden);
 
     return (
         <div>
@@ -67,11 +74,16 @@ export default function TotalCompras() {
                 <br />
                 <center>
                     <Link to={`/`} className="col-md-4 container">
-                        <button type="button" href="/" className="btn btn-danger" > Volver al inicio</button>
+                        <button type="button" href="/" className="btn btn-danger" >Volver al inicio</button>
                     </Link>
                 </center>
                 <br />
+                <br />
+                <center>
+                    <button type="button" className="btn btn-danger" onClick={() => eliminar()}>Eliminar productos</button>
+                </center>
+                <br />
             </Container>
-        </div>
+        </div >
     )
 }

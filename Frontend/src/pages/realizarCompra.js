@@ -77,11 +77,6 @@ export default function RealizarCompra() {
         setTotalCompra(numero + calculoiva);
     }
 
-    // Llenar elemetos en la bd
-    useEffect(() => {
-        axios.get(`/cargar`);
-    }, []);
-
     // Peticion para traer los productos de la bd
     useEffect(() => {
         axios.get(`/productos`)
@@ -178,7 +173,20 @@ export default function RealizarCompra() {
         $('#clear3').load('realizarCompra.js');
     }
 
-    // console.log(productodb);
+    let alphaExp = /^[a-zA-z\u00C0-\u00ff\s]+$/;
+
+    const only = function(){
+        if (document.form.match(alphaExp)) { 
+            console.log("todo correcto"); 
+        } else {
+            swal.fire({
+                title: "Error!",
+                text: "Por favor solo ingresa letras en tu nombre",
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+        }
+    }
 
     return (
         <div>
@@ -193,9 +201,10 @@ export default function RealizarCompra() {
                         <label className="form-label">Numero de orden</label>
                         <input type="number" className="form-control" disabled id="exampleFormControlInput1" value={orden} />
                     </div>
-                    <div className="mb-3 pr-4 pl-4">
+                    <div className="pr-4 pl-4">
                         <label className="form-label">Nombre y apellidos</label>
-                        <input className="form-control" type="text" {...register('nombres', { required: true, minLength: 2 })} placeholder="Escribe aqui tu nombre" />
+                        <input className="form-control mb-2" type="text" id="form" {...register('nombres', { required: true, minLength: 2 })} placeholder="Escribe aqui tu nombre" onChange={(e) => { e.target.value = e.target.value.match(alphaExp) ? e.target.value.match(alphaExp) : null }}/>
+                        <p className="ml-2" style={{ color: 'gray' }}>*Solo letras</p>
                         {errors.nombres && errors.nombres.type === "required" && <p style={{ color: 'red' }}>No puedes dejar vacio este campo</p>}
                         {errors.nombres && errors.nombres.type === "minLength" && <p style={{ color: 'red' }}>¡Tu nombre es muy corto!</p>}
                     </div>
