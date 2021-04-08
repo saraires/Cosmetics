@@ -32,8 +32,6 @@ export default function TotalCompras() {
                 <br />
                 <h1 className="container">Historial de compras</h1>
                 <br />
-                <h3>Nombre:</h3>
-                <p>{orden.nombre}</p>
                 <Table id="tabla"
                     striped
                     hover

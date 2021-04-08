@@ -1,7 +1,6 @@
 "use strict"
 
 const express = require('express');
-const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
 
@@ -19,5 +18,7 @@ app.set('port', 5001);
 
 // Levantamos el servidor
 app.listen(app.get('port'), () => {
-    console.log(`Aplicación corriendo en el puerto ${app.get('port')}!!`)
-})
+    console.log(`Aplicación corriendo en el puerto ${app.get('port')}!!`);
+});
+
+module.exports = app;
