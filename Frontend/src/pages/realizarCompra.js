@@ -175,19 +175,6 @@ export default function RealizarCompra() {
 
     let alphaExp = /^[a-zA-z\u00C0-\u00ff\s]+$/;
 
-    const only = function(){
-        if (document.form.match(alphaExp)) { 
-            console.log("todo correcto"); 
-        } else {
-            swal.fire({
-                title: "Error!",
-                text: "Por favor solo ingresa letras en tu nombre",
-                icon: "error",
-                confirmButtonText: "Ok",
-            });
-        }
-    }
-
     return (
         <div>
             <Menu />

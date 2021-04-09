@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "mocha test/compras.test.js --exit"
+    "start": "node index.js",
+    "test": "mocha test/compras.test.js --exit",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",

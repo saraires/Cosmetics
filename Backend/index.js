@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-const compras = require('./routes/compras');
+const compras = require('./src/routes/compras');
 
 //Modo de uso de morgan "Middlewares"
 app.use(cors());

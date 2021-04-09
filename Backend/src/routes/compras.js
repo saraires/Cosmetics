@@ -4,29 +4,8 @@ const { Router } = require('express');
 const { cnn_mysql } = require('../DB/conexion');
 const router = Router();
 
-// Obtener todos los productos
-router.get('/productos', (req, res) => {
-    cnn_mysql.query('SELECT * FROM Producto', (error, resultset, fields) => {
-        if (error) {
-            return res.status(500).send("Se presento un error en la base de datos");
-        } else {
-            return res.status(200).json(resultset);
-        }
-    })
-});
-
-// Obtener todas las ordenes
-router.get('/orden', (req, res) => {
-    cnn_mysql.query('SELECT * FROM Orden', (error, resultset, fields) => {
-        if (error) {
-            return res.status(500).send("Se presento un error en la base de datos");
-        } else {
-            return res.status(200).json(resultset);
-        }
-    })
-});
-
-router.get('/cargar', (req, res) => {
+// Cargar los productos al iniciar el servidor
+router.get('/cargar', async (req, res) => {
 
     try {
         const productos = [
@@ -41,22 +20,32 @@ router.get('/cargar', (req, res) => {
             { "id_Producto": "9", "nombre": "Pinza depiladora", "precio": "73000", "cantidadDisponible": "130" },
             { "id_Producto": "10", "nombre": "Kit brochas", "precio": "142000", "cantidadDisponible": "20" }]
 
-
         for (let i = 0; i < productos.length; i++) {
-            cnn_mysql.query('INSERT INTO Producto(id_Producto, nombre, precio, cantidadDisponible) VALUES (?, ?, ?, ?)', [productos[i].id_Producto, productos[i].nombre, productos[i].precio, productos[i].cantidadDisponible]);
+            cnn_mysql.query('INSERT INTO Producto(id_Producto, nombre, precio, cantidadDisponible) VALUES (?, ?, ?, ?)', [productos[i].id_Producto, productos[i].nombre, productos[i].precio, productos[i].cantidadDisponible])
+
         }
-        res.json("Se cargaron los datos");
+        res.json({ "Se cargaron los datos": "si" });
     } catch (e) {
-        console.log(e);
         res.status(404).json("no se pudo cargar la informacion");
     }
+});
+
+// Obtener todos los productos
+router.get('/productos', (req, res) => {
+    cnn_mysql.query('SELECT * FROM Producto', (error, resultset, fields) => {
+        if (error) {
+            return res.status(500).send("Se presento un error en la base de datos");
+        } else {
+            return res.status(200).json(resultset);
+        }
+    })
 });
 
 // Eliminar datos de la bd
 router.delete("/eliminar-productos", (req, res) => {
     try {
         cnn_mysql.query("DELETE from Producto");
-        res.json("Productos eliminados");
+        res.json({ "Productos": "eliminados" });
     } catch (error) {
         console.error(error.message);
     }
@@ -79,12 +68,26 @@ router.post('/agregarOrden', async (req, res) => {
                 numeroProductos: numeroProductos
             })
         } else {
-            res.json({})
+            console.log(e);
+            res.json("No se pudo agregar la orden");
         }
 
     } catch (e) {
-        res.status(500).json({ e });
+        console.log(e);
+        res.status(500).json(e);
     }
 });
+
+// Obtener todas las ordenes
+router.get('/orden', (req, res) => {
+    cnn_mysql.query('SELECT * FROM Orden', (error, resultset, fields) => {
+        if (error) {
+            return res.status(500).send("Se presento un error en la base de datos");
+        } else {
+            return res.status(200).json(resultset);
+        }
+    })
+});
+
 
 module.exports = router;
