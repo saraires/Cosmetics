@@ -6,10 +6,22 @@ import imagenBonita from '../images/imagenBonita.png'
 
 export default function Inicio(){
 
-    // Llenar elemetos en la bd
+    // Eliminar datos
     useEffect(() => {
+        try {
+            axios.delete('/eliminar-productos')
+            .then(() => {
+                llenarbd();
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    });
+
+    // Llenar elemetos en la bd
+    const llenarbd = function(){
         axios.get(`/cargar`);
-    }, []);
+    };
 
     return(
         <div>
